@@ -1,23 +1,22 @@
 #Create api method program bxb
 #Facebook sidra_malik
-
 import requests
 
-def make_facebook_api_request(endpoint, access_token):
-    base_url = "https://graph.facebook.com/v14.0/"  # Update the API version as needed
-    url = f"{base_url}{endpoint}"
-    params = {"access_token": access_token}
+URL = 'https://b-api.facebook.com/data'  
 
-    response = requests.get(url, params=params)
-
-    if response.status_code == 200:
-        return response.json()
+try:
+    response = requests.get(URL)
+    response.raise_for_status()  
+    print("Response Content-Type:", response.headers['content-type'])
+    print("Response Status Code:", response.status_code)
+    with open('a.txt', 'w', encoding='utf-8') as file:
+        file.write(response.text)
+    if response.headers['content-type'] != 'application/json':
+        print("Error: Response is not in JSON format.")
     else:
-        print(f"Error {response.status_code}: {response.text}")
-        return None
-
-# Example usage:
-access_token = "YOUR_ACCESS_TOKEN"
-user_info = make_facebook_api_request("me", access_token)
-if user_info:
-    print(user_info)
+        data = response.json()  
+        print(data)
+except requests.exceptions.RequestException as e:
+    print(f"Error: {e}")
+except ValueError as e:
+    print(f"Error parsing response as JSON: {e}")
